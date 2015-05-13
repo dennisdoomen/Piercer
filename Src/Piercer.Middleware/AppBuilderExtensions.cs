@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Owin;
@@ -42,7 +37,7 @@ namespace Piercer.Middleware
 
         private static string GetXmlCommentsPath()
         {
-            return string.Format(@"{0}\Piercer.Middleware.XML", System.AppDomain.CurrentDomain.BaseDirectory);
+            return Assembly.GetExecutingAssembly().CodeBase.ToLower().Replace(".dll", ".xml");
         }
 
         private static HttpConfiguration BuildHttpConfiguration()
@@ -56,8 +51,8 @@ namespace Piercer.Middleware
             return configuration;
         }
 
-        /// <summary>
         // This is needed to ensure only the controller and routes in this assembly are discovered
+        /// <summary>
         /// </summary>
         private class WebApiAssembliesResolver : IAssembliesResolver
         {
