@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Autofac;
+using Autofac.Features.ResolveAnything;
+using Autofac.Integration.WebApi;
 using Owin;
 using Swashbuckle.Application;
 
@@ -10,15 +12,13 @@ namespace Piercer.Middleware
 {
     public static class AppBuilderExtensions
     {
-        private const string RootPath = "/api";
-
         public static IAppBuilder UsePiercer(this IAppBuilder appBuilder, PiercerSettings settings)
         {
-            HttpConfiguration configuration = BuildHttpConfiguration();
+            HttpConfiguration configuration = BuildHttpConfiguration(settings);
 
             EnableSwagger(configuration);
 
-            appBuilder.Map(RootPath, a => a.UseWebApi(configuration));
+            appBuilder.Map(settings.Route, a => a.UseWebApi(configuration));
 
             return appBuilder;
         }
@@ -40,13 +40,19 @@ namespace Piercer.Middleware
             return Assembly.GetExecutingAssembly().CodeBase.ToLower().Replace(".dll", ".xml");
         }
 
-        private static HttpConfiguration BuildHttpConfiguration()
+        private static HttpConfiguration BuildHttpConfiguration(PiercerSettings settings)
         {
             var configuration = new HttpConfiguration();
 
             configuration.Services.Replace(typeof (IAssembliesResolver), new WebApiAssembliesResolver());
             configuration.MapHttpAttributeRoutes();
-            configuration.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.LocalOnly;
+            configuration.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
+
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterInstance(settings);
+            containerBuilder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
+
+            configuration.DependencyResolver = new AutofacWebApiDependencyResolver(containerBuilder.Build());
 
             return configuration;
         }
@@ -61,9 +67,5 @@ namespace Piercer.Middleware
                 return new[] {GetType().Assembly};
             }
         }
-    }
-
-    public class PiercerSettings
-    {
     }
 }

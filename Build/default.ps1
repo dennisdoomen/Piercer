@@ -82,13 +82,13 @@ task Compile -Description "Compiling solution." {
 }
 
 task RunTests -depends Compile -Description "Running all unit tests." {
-    $xunitRunner = "$SrcDir\packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
+    $xunitRunner = "$BaseDirectory\Packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
 	
     if (!(Test-Path $ReportsDir)) {
 		New-Item $ReportsDir -Type Directory
 	}
 
-	Get-ChildItem $SrcDir -Recurse -Include *.Specs.dll | 
+	Get-ChildItem "$BaseDirectory\Tests" -Recurse -Include *.Specs.dll | 
 		Where-Object { ($_.FullName -notlike "*obj*") } | 
 			% {
 				$project = $_.BaseName
@@ -102,6 +102,8 @@ task MergeAssemblies -depends Compile -Description "Merging dependencies" {
 
     Merge-Assemblies -outputFile "$NugetOutputDir\Piercer.Middleware.dll" -files @(
         "$SrcDir\Piercer.Middleware\bin\release\Piercer.Middleware.dll",
+		"$SrcDir\Piercer.Middleware\bin\release\Autofac.dll",
+		"$SrcDir\Piercer.Middleware\bin\release\Autofac.Integration.WebAPI.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Microsoft.Owin.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Newtonsoft.Json.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Swashbuckle.Core.dll",
