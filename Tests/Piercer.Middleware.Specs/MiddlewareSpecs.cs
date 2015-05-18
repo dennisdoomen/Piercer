@@ -16,7 +16,7 @@ namespace Piercer.Middleware.Specs
             // -------------------------------------------------------------------------------------------------------
             var appBuilder = new AppBuilder();
 
-            appBuilder.UsePiercer(new PiercerSettings());
+            appBuilder.UsePiercer();
 
             // -------------------------------------------------------------------------------------------------------
             // Act
@@ -24,29 +24,6 @@ namespace Piercer.Middleware.Specs
             var httpClient = new HttpClient(new OwinHttpMessageHandler(appBuilder.Build()));
 
             var result = await httpClient.GetStringAsync("http://localhost/api/piercer/assemblies");
-
-            // -------------------------------------------------------------------------------------------------------
-            // Assert
-            // -------------------------------------------------------------------------------------------------------
-            result.Should().Contain("Piercer.Middleware");
-        }
-
-        [Fact]
-        public async Task When_specifying_an_explicit_route_it_should_be_reachable_through_that_route()
-        {
-            // -------------------------------------------------------------------------------------------------------
-            // Arrange
-            // -------------------------------------------------------------------------------------------------------
-            var appBuilder = new AppBuilder();
-
-            appBuilder.UsePiercer(new PiercerSettings().AtRoute("/myroute"));
-
-            var httpClient = new HttpClient(new OwinHttpMessageHandler(appBuilder.Build()));
-
-            // -------------------------------------------------------------------------------------------------------
-            // Act
-            // -------------------------------------------------------------------------------------------------------
-            var result = await httpClient.GetStringAsync("http://localhost/myroute/piercer/assemblies");
 
             // -------------------------------------------------------------------------------------------------------
             // Assert

@@ -7,7 +7,7 @@ namespace ConsoleHost
     {
         public void Configuration(IAppBuilder app)
         {
-            app.UsePiercer(new PiercerSettings());
+            app.UsePiercer();
         }
     }
 }

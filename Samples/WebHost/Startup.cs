@@ -9,7 +9,7 @@ namespace WebHost
     {
         public void Configuration(IAppBuilder app)
         {
-            app.UsePiercer(new PiercerSettings());
+            app.UsePiercer();
             ConfigureAuth(app);
         }
     }

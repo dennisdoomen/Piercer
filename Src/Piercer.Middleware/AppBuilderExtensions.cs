@@ -9,13 +9,13 @@ namespace Piercer.Middleware
 {
     public static class AppBuilderExtensions
     {
-        public static IAppBuilder UsePiercer(this IAppBuilder appBuilder, PiercerSettings settings)
+        public static IAppBuilder UsePiercer(this IAppBuilder appBuilder)
         {
             HttpConfiguration configuration = BuildHttpConfiguration();
 
             EnableSwagger(configuration);
 
-            appBuilder.Map(settings.Route, a => a.UseWebApi(configuration));
+            appBuilder.Map("/api", a => a.UseWebApi(configuration));
 
             return appBuilder;
         }
