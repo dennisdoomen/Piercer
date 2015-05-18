@@ -102,8 +102,6 @@ task MergeAssemblies -depends Compile -Description "Merging dependencies" {
 
     Merge-Assemblies -outputFile "$NugetOutputDir\Piercer.Middleware.dll" -files @(
         "$SrcDir\Piercer.Middleware\bin\release\Piercer.Middleware.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\Autofac.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\Autofac.Integration.WebAPI.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Microsoft.Owin.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Newtonsoft.Json.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Swashbuckle.Core.dll",

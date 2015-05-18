@@ -46,36 +46,12 @@ namespace Piercer.Middleware.Specs
             // -------------------------------------------------------------------------------------------------------
             // Act
             // -------------------------------------------------------------------------------------------------------
-
             var result = await httpClient.GetStringAsync("http://localhost/myroute/piercer/assemblies");
 
             // -------------------------------------------------------------------------------------------------------
             // Assert
             // -------------------------------------------------------------------------------------------------------
             result.Should().Contain("Piercer.Middleware");
-        }
-
-        [Fact]
-        public async Task When_excluding_certain_assemblies_it_should_not_return_them_in_the_result()
-        {
-            // -------------------------------------------------------------------------------------------------------
-            // Arrange
-            // -------------------------------------------------------------------------------------------------------
-            var appBuilder = new AppBuilder();
-
-            appBuilder.UsePiercer(new PiercerSettings().Ignoring("Piercer.Middleware"));
-
-            var httpClient = new HttpClient(new OwinHttpMessageHandler(appBuilder.Build()));
-
-            // -------------------------------------------------------------------------------------------------------
-            // Act
-            // -------------------------------------------------------------------------------------------------------
-            var result = await httpClient.GetStringAsync("http://localhost/api/piercer/assemblies");
-
-            // -------------------------------------------------------------------------------------------------------
-            // Assert
-            // -------------------------------------------------------------------------------------------------------
-            result.Should().NotContain("Piercer.Middleware");
         }
     }
 }
