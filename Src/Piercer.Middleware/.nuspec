@@ -13,13 +13,14 @@
         <releaseNotes/>
       <dependencies>
 		<group>
-			<dependency id="Owin" version="1.0.0" />
+			<dependency id="Swashbuckle.Core" version="5.1.4" />
+			<dependency id="Microsoft.AspNet.WebApi.Owin" version="5.2.3" />
 		</group>
 	  </dependencies>
     </metadata>
     <files>
-        <file src="..\..\Artifacts\Piercer.Middleware.dll" target="lib\net45" />
-        <file src="..\..\Artifacts\Piercer.Middleware.pdb" target="lib\net45" />
-        <file src="..\..\Artifacts\Piercer.Middleware.xml" target="lib\net45" />
+        <file src="bin\Release\Piercer.Middleware.dll" target="lib\net45" />
+        <file src="bin\Release\Piercer.Middleware.pdb" target="lib\net45" />
+        <file src="bin\Release\Piercer.Middleware.xml" target="lib\net45" />
     </files>
 </package>

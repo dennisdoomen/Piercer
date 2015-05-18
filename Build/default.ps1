@@ -14,7 +14,7 @@ properties {
     $GitVersionExe = "$BaseDirectory\Lib\GitVersion.exe"
 }
 
-task default -depends Clean, RestoreNugetPackages, ExtractVersionsFromGit, ApplyAssemblyVersioning, Compile, RunTests, MergeAssemblies, CreateNuGetPackages
+task default -depends Clean, RestoreNugetPackages, ExtractVersionsFromGit, ApplyAssemblyVersioning, Compile, RunTests, CreateNuGetPackages
 
 task Clean -Description "Cleaning solution." {
 	Remove-Item $NugetOutputDir/* -Force -Recurse -ErrorAction SilentlyContinue
@@ -96,20 +96,6 @@ task RunTests -depends Compile -Description "Running all unit tests." {
 				Write-Host "Running the unit tests in $_"
 				exec { . $xunitRunner "$_" -html "$ReportsDir\$project.html"  }
 			}
-}
-
-task MergeAssemblies -depends Compile -Description "Merging dependencies" {
-
-    Merge-Assemblies -outputFile "$NugetOutputDir\Piercer.Middleware.dll" -files @(
-        "$SrcDir\Piercer.Middleware\bin\release\Piercer.Middleware.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\Microsoft.Owin.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\Newtonsoft.Json.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\Swashbuckle.Core.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\System.Net.Http.Formatting.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\System.Web.Http.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\System.Web.Http.Owin.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\System.Web.Http.WebHost.dll"
-    )
 }
 
 task CreateNuGetPackages -depends Compile -Description "Creating NuGet package." {
