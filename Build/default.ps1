@@ -10,10 +10,10 @@ properties {
 	$AssemblyInfoFilePath = "$SrcDir\Piercer.Middleware\Properties\AssemblyInfo.cs"
     
     $NugetExe = "$BaseDirectory\Lib\nuget.exe"
-    $GitVersionExe = "$BaseDirectory\Lib\GitVersion.exe"
+	$NuGetVersion = "0.1.0.0"
 }
 
-task default -depends Clean, RestoreNugetPackages, ExtractVersionsFromGit, ApplyAssemblyVersioning, Compile, CreateNuGetPackages
+task default -depends Clean, RestoreNugetPackages, Compile, CreateNuGetPackages
 
 task Clean -Description "Cleaning solution." {
 	Remove-Item $NugetOutputDir/* -Force -Recurse -ErrorAction SilentlyContinue
@@ -35,47 +35,6 @@ task RestoreNugetPackages {
     }
 }
 
-task ExtractVersionsFromGit {
-    
-        $json = . "$GitVersionExe" 
-        
-        if ($LASTEXITCODE -eq 0) {
-            $version = (ConvertFrom-Json ($json -join "`n"));
-          
-            TeamCity-SetBuildNumber $version.FullSemVer;
-            
-            $script:AssemblyVersion = $version.ClassicVersion;
-            $script:InformationalVersion = $version.InformationalVersion;
-            $script:NuGetVersion = $version.NuGetVersionV2;
-        }
-        else {
-            Write-Output $json -join "`n";
-        }
-}
-
-task ApplyAssemblyVersioning {
-	Get-ChildItem -Path $SrcDir -Filter "?*AssemblyInfo.cs" -Recurse -Force |
-	foreach-object {  
-
-		Set-ItemProperty -Path $_.FullName -Name IsReadOnly -Value $false
-
-        $content = Get-Content $_.FullName
-        
-        if ($script:AssemblyVersion) {
-    		Write-Output "Updating " $_.FullName "with version" $script:AssemblyVersion
-    	    $content = $content -replace 'AssemblyVersion\("(.+)"\)', ('AssemblyVersion("' + $script:AssemblyVersion + '")')
-            $content = $content -replace 'AssemblyFileVersion\("(.+)"\)', ('AssemblyFileVersion("' + $script:AssemblyVersion + '")')
-        }
-		
-        if ($script:InformationalVersion) {
-    		Write-Output "Updating " $_.FullName "with information version" $script:InformationalVersion
-            $content = $content -replace 'AssemblyInformationalVersion\("(.+)"\)', ('AssemblyInformationalVersion("' + $script:InformationalVersion + '")')
-        }
-        
-	    Set-Content -Path $_.FullName $content
-	}    
-}
-
 task Compile -Description "Compiling solution." { 
 	exec { msbuild /nologo /verbosity:minimal $SolutionFilePath /p:Configuration=Release }
 }
@@ -83,9 +42,6 @@ task Compile -Description "Compiling solution." {
 task CreateNuGetPackages -depends Compile -Description "Creating NuGet package." {
 	Get-ChildItem $SrcDir -Recurse -Include *.nuspec | % {
 		exec { 
-            if (!$NuGetVersion) {
-                $NuGetVersion = "0.1.0.0"
-            }
         
         Write-Host $_
             . "$NugetExe" pack $_ -o $NugetOutputDir -version $NuGetVersion 
