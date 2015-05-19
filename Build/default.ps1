@@ -14,7 +14,7 @@ properties {
     $GitVersionExe = "$BaseDirectory\Lib\GitVersion.exe"
 }
 
-task default -depends Clean, RestoreNugetPackages, ExtractVersionsFromGit, ApplyAssemblyVersioning, Compile, RunTests, CreateNuGetPackages
+task default -depends Clean, RestoreNugetPackages, ExtractVersionsFromGit, ApplyAssemblyVersioning, Compile, CreateNuGetPackages
 
 task Clean -Description "Cleaning solution." {
 	Remove-Item $NugetOutputDir/* -Force -Recurse -ErrorAction SilentlyContinue
@@ -79,23 +79,6 @@ task ApplyAssemblyVersioning {
 
 task Compile -Description "Compiling solution." { 
 	exec { msbuild /nologo /verbosity:minimal $SolutionFilePath /p:Configuration=Release }
-}
-
-task RunTests -depends Compile -Description "Running all unit tests." {
-    $xunitRunner = "$BaseDirectory\Packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
-	
-    if (!(Test-Path $ReportsDir)) {
-		New-Item $ReportsDir -Type Directory
-	}
-
-	Get-ChildItem "$BaseDirectory\Tests" -Recurse -Include *.Specs.dll | 
-		Where-Object { ($_.FullName -notlike "*obj*") } | 
-			% {
-				$project = $_.BaseName
-	
-				Write-Host "Running the unit tests in $_"
-				exec { . $xunitRunner "$_" -html "$ReportsDir\$project.html"  }
-			}
 }
 
 task CreateNuGetPackages -depends Compile -Description "Creating NuGet package." {
