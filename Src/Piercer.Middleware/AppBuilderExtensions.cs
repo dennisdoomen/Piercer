@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Owin;
-using Swashbuckle.Application;
 
 namespace Piercer.Middleware
 {
@@ -13,23 +12,9 @@ namespace Piercer.Middleware
         {
             HttpConfiguration configuration = BuildHttpConfiguration();
 
-            EnableSwagger(configuration);
-
             appBuilder.Map("/api", a => a.UseWebApi(configuration));
 
             return appBuilder;
-        }
-
-        private static void EnableSwagger(HttpConfiguration configuration)
-        {
-            configuration
-                .EnableSwagger(c =>
-                {
-                    c.SingleApiVersion("v1", "Piercer; easily diagnose run-time assemblies and threads");
-                    c.RootUrl(req => SwaggerDocsConfig.DefaultRootUrlResolver(req) + "/api");
-                    c.IncludeXmlComments(GetXmlCommentsPath());
-                })
-                .EnableSwaggerUi();
         }
 
         private static string GetXmlCommentsPath()
