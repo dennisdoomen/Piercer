@@ -8,7 +8,6 @@ properties {
     $ReportsDir = "$BaseDirectory\Artifacts"
 	$SolutionFilePath = "$BaseDirectory\$ProjectName.sln"
 	$AssemblyInfoFilePath = "$SrcDir\Piercer.Middleware\Properties\AssemblyInfo.cs"
-    $ilMergeModule.ilMergePath = "$BaseDirectory\packages\ilmerge.2.14.1208\tools\ILMerge.exe"
     
     $NugetExe = "$BaseDirectory\Lib\nuget.exe"
     $GitVersionExe = "$BaseDirectory\Lib\GitVersion.exe"

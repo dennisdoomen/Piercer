@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Http;
 
-namespace Piercer.Middleware
+namespace Piercer
 {
     /// <summary>
     ///     Provides APIs for returning run-time information about the host process
     /// </summary>
-    [RoutePrefix(("piercer"))]
-    public class PiercerController : ApiController
+    public class Diagnostics
     {
         /// <summary>
         ///     Returns all the run-time assemblies of the host process.
         /// </summary>
-        [Route("assemblies")]
-        [HttpGet]
         public string[] GetAssemblies()
         {
             var query =

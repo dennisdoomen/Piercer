@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Owin.Hosting;
+using Piercer;
 
 namespace ConsoleHost
 {
@@ -7,12 +7,9 @@ namespace ConsoleHost
     {
         private static void Main(string[] args)
         {
-            string rootUrl = "http://localhost:12345";
-
-            using (WebApp.Start<Startup>(rootUrl))
+            foreach (var assembly in new Diagnostics().GetAssemblies())
             {
-                Console.WriteLine("OWIN host running at {0}. Press ENTER to shutdown", rootUrl);
-                Console.ReadLine();
+                Console.WriteLine(assembly);
             }
         }
     }
