@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Owin.Hosting;
+using Owin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,14 +10,24 @@ namespace ConsoleHost
     {
         private static void Main(string[] args)
         {
-            IEnumerable<string> query =
-                from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                select assembly.FullName;
+            string baseUril = "http://localhost:1234";
 
-            foreach (string assembly in query)
+            using (WebApp.Start<Startup>(baseUril))
             {
-                Console.WriteLine(assembly);
+                Console.WriteLine("No running at " + baseUril);
+                Console.ReadLine();
             }
+        }
+    }
+
+    internal class Startup
+    {
+        public void Configuration(IAppBuilder app)
+        {
+#if DEBUG
+            app.UseErrorPage();
+#endif
+            app.UseWelcomePage("/");
         }
     }
 }
