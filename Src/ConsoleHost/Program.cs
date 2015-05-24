@@ -6,6 +6,8 @@ using Owin;
 
 namespace ConsoleHost
 {
+    using MidFunc = Func<Func<IDictionary<string, object>, Task>, Func<IDictionary<string, object>, Task>>;
+
     internal class Program
     {
         private static void Main(string[] args)
@@ -24,17 +26,15 @@ namespace ConsoleHost
     {
         public void Configuration(IAppBuilder app)
         {
-            app.Use((owinContext, next) =>
+            app.Use((MidFunc)(next => environment =>
             {
-                IDictionary<string, object> environment = owinContext.Environment;
-
                 foreach (string key in environment.Keys)
                 {
                     Console.WriteLine("{0}: {1}", key, environment[key]);
                 }
 
-                return next();
-            });
+                return next(environment);
+            }));
 
             app.UseWelcomePage();
         }
