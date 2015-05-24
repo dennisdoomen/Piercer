@@ -1,8 +1,8 @@
-﻿using Microsoft.Owin.Hosting;
-using Owin;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Owin.Hosting;
+using Owin;
 
 namespace ConsoleHost
 {
@@ -14,7 +14,7 @@ namespace ConsoleHost
 
             using (WebApp.Start<Startup>(baseUril))
             {
-                Console.WriteLine("No running at " + baseUril);
+                Console.WriteLine("Now running at " + baseUril);
                 Console.ReadLine();
             }
         }
@@ -24,10 +24,19 @@ namespace ConsoleHost
     {
         public void Configuration(IAppBuilder app)
         {
-#if DEBUG
-            app.UseErrorPage();
-#endif
-            app.UseWelcomePage("/");
+            app.Use((owinContext, next) =>
+            {
+                IDictionary<string, object> environment = owinContext.Environment;
+
+                foreach (string key in environment.Keys)
+                {
+                    Console.WriteLine("{0}: {1}", key, environment[key]);
+                }
+
+                return next();
+            });
+
+            app.UseWelcomePage();
         }
     }
 }
