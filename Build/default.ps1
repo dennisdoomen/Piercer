@@ -47,7 +47,7 @@ task ExtractVersionsFromGit {
             
             $script:AssemblyVersion = $version.ClassicVersion;
             $script:InformationalVersion = $version.InformationalVersion;
-            $script:NuGetVersion = $version.NuGetVersionV2;
+            $script:NuGetVersion = $version.ClassicVersion;
         }
         else {
             Write-Output $json -join "`n";
