@@ -17,11 +17,6 @@ namespace Piercer.Middleware
             return appBuilder;
         }
 
-        private static string GetXmlCommentsPath()
-        {
-            return Assembly.GetExecutingAssembly().CodeBase.ToLower().Replace(".dll", ".xml");
-        }
-
         private static HttpConfiguration BuildHttpConfiguration()
         {
             var configuration = new HttpConfiguration();
