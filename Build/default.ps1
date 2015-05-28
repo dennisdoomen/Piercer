@@ -46,7 +46,7 @@ task ExtractVersionsFromGit {
             
             $script:AssemblyVersion = $version.ClassicVersion;
             $script:InformationalVersion = $version.InformationalVersion;
-            $script:NuGetVersion = $version.NuGetVersionV2;
+            $script:NuGetVersion = $version.ClassicVersion;
         }
         else {
             Write-Output $json -join "`n";
@@ -88,7 +88,7 @@ task CreateNuGetPackages -depends Compile -Description "Creating NuGet package."
             }
         
         Write-Host $_
-            . "$NugetExe" pack $_ -o $NugetOutputDir -version $NuGetVersion 
+            . "$NugetExe" pack $_ -o $NugetOutputDir -version "$NuGetVersion"
         }
 	}
 }
