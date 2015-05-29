@@ -14,7 +14,7 @@ namespace ConsoleHost
 
             using (WebApp.Start<Startup>(baseUril))
             {
-                Console.WriteLine("No running at " + baseUril);
+                Console.WriteLine("Now running at " + baseUril);
                 Console.ReadLine();
             }
         }
