@@ -54,7 +54,7 @@ task ExtractVersionsFromGit {
 }
 
 task ApplyAssemblyVersioning {
-	Get-ChildItem -Path $SrcDir -Filter "?*AssemblyInfo.cs" -Recurse -Force |
+	Get-ChildItem -Path $SrcDir -Filter "AssemblyInfo.cs" -Recurse -Force |
 	foreach-object {  
 
 		Set-ItemProperty -Path $_.FullName -Name IsReadOnly -Value $false
