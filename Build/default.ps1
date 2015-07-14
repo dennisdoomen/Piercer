@@ -8,7 +8,7 @@ properties {
     $ReportsDir = "$BaseDirectory\Artifacts"
 	$SolutionFilePath = "$BaseDirectory\$ProjectName.sln"
 	$AssemblyInfoFilePath = "$SrcDir\Piercer.Middleware\Properties\AssemblyInfo.cs"
-    $ilMergeModule.ilMergePath = "$BaseDirectory\packages\ilmerge.2.14.1208\tools\ILMerge.exe"
+    $ilMergePath = "$BaseDirectory\packages\ilrepack.2.0.2\tools\ilrepack.exe"
     
     $NugetExe = "$BaseDirectory\Lib\nuget.exe"
     $GitVersionExe = "$BaseDirectory\Lib\GitVersion.exe"
@@ -100,18 +100,24 @@ task RunTests -depends Compile -Description "Running all unit tests." {
 
 task MergeAssemblies -depends Compile -Description "Merging dependencies" {
 
-    Merge-Assemblies -outputFile "$NugetOutputDir\Piercer.Middleware.dll" -files @(
-        "$SrcDir\Piercer.Middleware\bin\release\Piercer.Middleware.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\Autofac.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\Autofac.Integration.WebAPI.dll",
+    Merge-Assemblies `
+		-outputFile "$NugetOutputDir\Piercer.Middleware.dll"`
+		-libPaths @( 
+			"$BaseDirectory\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45",
+			"$BaseDirectory\packages\Newtonsoft.Json.6.0.4\lib\net45\"
+		)`
+		-files @(
+		"$SrcDir\Piercer.Middleware\bin\release\Piercer.Middleware.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Microsoft.Owin.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Newtonsoft.Json.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\Swashbuckle.Core.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\System.Net.Http.Formatting.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\System.Web.Http.dll",
 		"$SrcDir\Piercer.Middleware\bin\release\System.Web.Http.Owin.dll",
-		"$SrcDir\Piercer.Middleware\bin\release\System.Web.Http.WebHost.dll"
-    )
+		"$SrcDir\Piercer.Middleware\bin\release\System.Web.Http.WebHost.dll",
+		"$SrcDir\Piercer.Middleware\bin\release\Autofac.dll",
+		"$SrcDir\Piercer.Middleware\bin\release\Autofac.Integration.WebAPI.dll"
+	)
 }
 
 task CreateNuGetPackages -depends Compile -Description "Creating NuGet package." {
@@ -125,4 +131,42 @@ task CreateNuGetPackages -depends Compile -Description "Creating NuGet package."
             . "$NugetExe" pack $_ -o $NugetOutputDir -version $NuGetVersion 
         }
 	}
+}
+
+function Merge-Assemblies {
+	param(
+		$files,
+		$outputFile,
+		$exclude,
+		[String[]] $libPaths
+	)
+
+	$exclude | out-file ".\exclude.txt"
+	
+	$libPathArgs = @()
+	
+	foreach ($libPath in $libPaths) {
+		$libPathArgs = $libPathArgs + "/lib:$libPath"
+	}
+
+	$args = @(
+		"/internalize:exclude.txt", 
+		"/allowdup",
+		"/xmldocs",
+		"/wildcards",
+        "/parallel",
+		"/targetplatform:v4",
+		"/out:$outputFile"
+		) + $libPathArgs + $files
+
+
+    Write-Host "$ilMergePath $args"
+    
+    & $ilMergePath $args 
+
+	if($LastExitCode -ne 0) {
+		write-error "Merge Failed"
+	}
+	
+	remove-item ".\exclude.txt"
 }
